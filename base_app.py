@@ -319,6 +319,7 @@ for this investigation.""")
 
         model_name = st.selectbox("Select your model", model_map.keys())
         tweet_process = cleaner(tweet_text)
+        vect_tweet = tweet_cv.transform([tweet_process])
 
         st.write("You selected:", model_name)
 
@@ -364,7 +365,7 @@ for this investigation.""")
             # Load your .pkl file with the model of your choice + make predictions
             # Try loading in multiple models to give the user a choice
             predictor = joblib.load(open(os.path.join(model_map[model_name]),"rb"))
-            prediction = predictor.predict([tweet_process])
+            prediction = predictor.predict(vect_tweet)
 
             # When model has successfully run, will print prediction
             # You can use a dictionary or similar structure to make this output
@@ -372,8 +373,7 @@ for this investigation.""")
             st.success("Text Categorized as: {}".format(prediction))
             if prediction == 1:
                 st.write(""" **The tweet supports the belief of man-made climate change.** """)
-                st.markdown(f'<img src="data:image/gif;base64,{data_url}" alt="cat gif">',
-                            unsafe_allow_html=True)
+               
             elif prediction == 2:
                 st.write(""" **The tweet link to factual news about climate change.** """)
 
