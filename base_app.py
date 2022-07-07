@@ -13,6 +13,7 @@
 import streamlit as st
 import joblib,os
 import base64
+import pickle
 
 # Loading Data Dependencies
 import pandas as pd
@@ -84,9 +85,6 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 stop_words = set(stopwords.words('english'))
 
-# Model_map
-model_map = {"LogisticRegression": "Logistic_regression.pkl", "LinearSVC": "Linear_svc.pkl", "SVC": "Support_vc.pkl"}
-
 # Load your raw data
 raw = pd.read_csv("resources/train.csv")
 
@@ -97,6 +95,7 @@ df = raw.groupby("sentiment")
 palette_color = sns.color_palette("dark")
 
 scaler = preprocessing.MinMaxScaler()
+
 # Data Preprocessing
 # Dealing wiht Class Imbalances
 # Resampling:
@@ -314,66 +313,35 @@ for this investigation.""")
 
         # Creating a text box for user input
         st.markdown("---")
+
         tweet_text = st.text_area("Enter Text","Type Here")
+
         st.markdown("---")
 
-        model_name = st.selectbox("Select your model", model_map.keys())
-        tweet_process = cleaner(tweet_text)
-        vect_tweet = tweet_cv.transform([tweet_process])
-
-        st.write("You selected:", model_name)
-
-        if model_name == "LogisticRegression":
-            with st.expander("See explaination"):
-                st.write("""The logistic regression classifier is a supervised machine learning
-                classification algorithm that is used to predict the probability of a categorical
-                dependent variable. In this method, the data is fitted to a logit function and
-                labelled as the class for which it has the highest probability of belonging to.""")
-
-        elif model_name == "SVC":
-            with st.expander("See explaination"):
-                st.write("""The Support Vector Machine (SVM) Classifier is a discriminative classifier
-                formally defined by a separating hyperplane. When labelled training data is passed to
-                the model, also known as supervised learning, the algorithm outputs an optimal hyperplane
-                which categorizes new data. In the SVM algorithm, we plot each data item as a point in
-                n-dimensional space (where n is a number of features you have) with the value of each
-                feature being the value of a particular coordinate. Then, we perform classification by
-                finding the hyper-plane that differentiates the two classes very well.""")
-
-        elif model_name == "RandomForestClassifier":
-            with st.expander("See explaination"):
-                st.write("""A Random forest creates decision trees on randomly selected data samples,
-                gets prediction from each tree and selects the best solution by means of voting.""")
-
-        else:
-            with st.expander("See explaination"):
-                st.write("""The objective of a Linear Support Vector Classifier is to return a "best fit" hyperplane
-                that categorises the data. It is similar to SVC with the kernel parameter set to ’linear’,
-                but it is implemented in terms of liblinear rather than libsvm, so it has more flexibility in the
-                choice of penalties and loss functions and can scale better to large numbers of samples.
-                The Linear SVC is also very similar to Logistic Regression (LR). It differs mostly in applying a buffer
-                margin (determined by the support vectors - vectors that lie on the buffer margins) and using 'hinge loss'
-                as apposed to log loss by LR. The Linear SVC creates a separating hyperplane that optimally separates
-                the different classes ('hinge loss' is the function that determines the buffer zone and hence the separation).
-                In simpler terms, the Linear SVC allows for a margin of error when determining how to optimally separate
-                the different classes, making it more robust to data with classes that aren't very clearly separated.""")
+        st.write("The **GRIN App** employs **Logistic Regression** as the working model.")
 
 
         st.markdown("---")
 
         if st.button("Classify"):
-            # Load your .pkl file with the model of your choice + make predictions
-            # Try loading in multiple models to give the user a choice
-            predictor = joblib.load(open(os.path.join(model_map[model_name]),"rb"))
+            # Transforming user input with vectorizer
+            tweet_process = cleaner(tweet_text)
+            vect_tweet = tweet_cv.transform([tweet_process])
+      
+            
+	# 		# Load your .pkl file with the model of your choice + make predictions
+	# 		# Try loading in multiple models to give the user a choice
+            predictor = joblib.load(open(os.path.join("Logistic_regression.pkl"),"rb"))
             prediction = predictor.predict(vect_tweet)
-
+            
+            
             # When model has successfully run, will print prediction
             # You can use a dictionary or similar structure to make this output
             # more human interpretable.
             st.success("Text Categorized as: {}".format(prediction))
             if prediction == 1:
                 st.write(""" **The tweet supports the belief of man-made climate change.** """)
-               
+
             elif prediction == 2:
                 st.write(""" **The tweet link to factual news about climate change.** """)
 
@@ -414,6 +382,20 @@ for this investigation.""")
                 plt.show()
                 st.pyplot(fig, use_container_width=True)
 
-if __name__ == '__main__':
+            word_pick = st.checkbox('Word Group(s)')
+            if word_pick:
+                st.info("Popular Group of Word(s)")
+                sentiment_select_word = st.selectbox("Choose sentiment option", sentiment_map)
+                word_amt = st.slider('Group of words', 1, 10, 5)
+                group_amt = st.slider("Most frequent word groupings", 1, 10, 5)
+                word_result = word_grouping(group_word_num=word_amt, ngram_iter_num=group_amt,
+                                        sentiment_cat=sentiment_map[sentiment_select_word])
+                st.table(pd.DataFrame({
+                'Word group': word_result.keys(),
+                'Frequency': word_result.values()
+            }))
+
 # Required to let Streamlit instantiate our web app.
-	main()
+
+if __name__ == '__main__':
+    main()
