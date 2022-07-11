@@ -206,17 +206,19 @@ for this investigation.""")
 
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
-    options = ["Prediction", "Information","Exploratory Data Analysis", "About Team"]
+    options = ["Prediction", "Exploratory Data Analysis", "About Team"]
     selection = st.sidebar.selectbox("Choose Option", options)
 
     if selection == "Prediction":
         st.subheader("Prediction")
-    elif selection == "information":
-        st.subheader("Information")
-    elif selection == "EDA":
+    
+    
+    elif selection == "Exploratory Data Analysis":
         st.subheader("Exploratory Data Analysis")
-    else:
+    elif selection == "About Team":
         st.subheader("About Team")
+    else:
+        " "
 
 	# Building the About Team page
     if selection == "About Team":
@@ -262,7 +264,7 @@ for this investigation.""")
 
 
     # Building the Information page
-    if selection == "Information":
+    if selection == "Exploratory Data Analysis":
         st.info("Brief Description")
         st.slider("Select a range of numbers", 0, 10)
 
@@ -350,50 +352,51 @@ for this investigation.""")
 
             else:
                 st.write(""" **The tweet does not believe in man-made climate change** """)
+                
+#         # Building the EDA Page
+#     if selection == "EDA":
+#         st.subheader("Tweet and Sentiment Exploration")
+#         hash_pick = st.checkbox("Hash-Tag")
+#         if hash_pick:
+#             val = st.selectbox("choose Tag Type", ["Hash-Tag", "Mentions"])
+#             sentiment_select = st.selectbox("Choose option", sentiment_map)
+#             iter_hash_select = st.slider("How many hash-tag", 1, 20, 10)
+#             if val == "Hash-Tag":
+#                 st.info("Popular Hast Tags")
+#             else:
+#                 st.info("Popular Mentions")
+#             valc = "hash_tag" if val == "Hash-Tag" else "mentions"
+#             result = tags(sentiment_cat=sentiment_map[sentiment_select], iter_hash_num=iter_hash_select,
+#             col_type=valc)
+#             source = pd.DataFrame({
+#             "Frequency": result.values(),
+#             "Hash-Tag": result.keys()
+#             })
+#             val = np.array(list(result.values())).reshape(-1, 1)
+#             dd = (scaler.fit_transform(val)).reshape(1, -1)
+#             fig, ax = plt.subplots(1,2, figsize=(10, 15))
+#             ax[0].pie(data=source, x=result.values(), labels=result.keys(), colors=palette_color)#explode=dd[0], autopct='%.0f%%')
+#             word_cloud = WordCloud(background_color='white',
+#                                    width=512,
+#                                    height=384).generate(' '.join(result.keys()))
+#             ax[1].imshow(word_cloud)
+#             ax[1].axis("off")
+#             plt.show()
+#             st.pyplot(fig, use_container_width=True)
 
-        # Building the EDA Page
-        if selection == "EDA":
-            st.subheader("Tweet and Sentiment Exploration")
-            hash_pick = st.checkbox("Hash-Tag")
-            if hash_pick:
-                val = st.selectbox("choose Tag Type", ["Hash-Tag", "Mentions"])
-                sentiment_select = st.selectbox("Choose option", sentiment_map)
-                iter_hash_select = st.slider("How many hash-tag", 1, 20, 10)
-                if val == "Hash-Tag":
-                    st.info("Popular Hast Tags")
-                else:
-                    st.info("Popular Mentions")
-                valc = "hash_tag" if val == "Hash-Tag" else "mentions"
-                result = tags(sentiment_cat=sentiment_map[sentiment_select], iter_hash_num=iter_hash_select,
-                col_type=valc)
-                source = pd.DataFrame({
-                "Frequency": result.values(),
-                "Hash-Tag": result.keys()
-                })
-                val = np.array(list(result.values())).reshape(-1, 1)
-                dd = (scaler.fit_transform(val)).reshape(1, -1)
-                fig, ax = plt.subplots(1,2, figsize=(10, 15))
-                ax[0].pie(data=source, x=result.values(), labels=result.keys(), colors=palette_color)#explode=dd[0], autopct='%.0f%%')
-                word_cloud = WordCloud(background_color='white',
-                                   width=512,
-                                   height=384).generate(' '.join(result.keys()))
-                ax[1].imshow(word_cloud)
-                ax[1].axis("off")
-                plt.show()
-                st.pyplot(fig, use_container_width=True)
-
-            word_pick = st.checkbox('Word Group(s)')
-            if word_pick:
-                st.info("Popular Group of Word(s)")
-                sentiment_select_word = st.selectbox("Choose sentiment option", sentiment_map)
-                word_amt = st.slider('Group of words', 1, 10, 5)
-                group_amt = st.slider("Most frequent word groupings", 1, 10, 5)
-                word_result = word_grouping(group_word_num=word_amt, ngram_iter_num=group_amt,
-                                        sentiment_cat=sentiment_map[sentiment_select_word])
-                st.table(pd.DataFrame({
-                'Word group': word_result.keys(),
-                'Frequency': word_result.values()
-            }))
+#     word_pick = st.checkbox('Word Group(s)')
+#     if word_pick:
+#         st.info("Popular Group of Word(s)")
+#         sentiment_select_word = st.selectbox("Choose sentiment option", sentiment_map)
+#         word_amt = st.slider('Group of words', 1, 10, 5)
+#         group_amt = st.slider("Most frequent word groupings", 1, 10, 5)
+#         word_result = word_grouping(group_word_num=word_amt, ngram_iter_num=group_amt, sentiment_cat=sentiment_map[sentiment_select_word])
+#         st.table(pd.DataFrame({
+#         'Word group': word_result.keys(),
+#         'Frequency': word_result.values()
+#     }))
+         
+                
 
 # Required to let Streamlit instantiate our web app.
 
